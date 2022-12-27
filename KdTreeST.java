@@ -1,4 +1,4 @@
-import edu.princeton.cs.algs4.MinPQ;
+import edu.princeton.cs.algs4.MaxPQ;
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.RectHV;
@@ -197,7 +197,7 @@ public class KdTreeST<Value> {
         }
         if (root == null) return null;
         Comparator<Point2D> comp = new PointDistComparator(p);
-        MinPQ<Point2D> myQ = new MinPQ<Point2D>(comp);
+        MaxPQ<Point2D> myQ = new MaxPQ<Point2D>(comp);
         nearest(p, root, 0, k, myQ);
         return myQ;
     }
@@ -234,20 +234,29 @@ public class KdTreeST<Value> {
         }
     }
 
+    private String toString(Iterable<Point2D> q) {
+        String myStr = "";
+        for (Point2D p : q) {
+            myStr += p.toString() + " ";
+        }
+        return myStr;
+
+    }
+
     private void nearest(Point2D p, Node h, int level, int k,
-                         MinPQ<Point2D> q) {
+                         MaxPQ<Point2D> q) {
         if (h == null) return;
 
         if (q.size() < k) {
             q.insert(h.point);
         }
         else {
-            Point2D worstIn = q.min();
+            Point2D worstIn = q.max();
             if (h.rect.distanceSquaredTo(p) > worstIn.distanceSquaredTo(p)) {
                 return;
             }
             else if (h.point.distanceSquaredTo(p) < worstIn.distanceSquaredTo(p)) {
-                q.delMin();
+                q.delMax();
                 q.insert(h.point);
             }
         }
@@ -310,6 +319,13 @@ public class KdTreeST<Value> {
 
         StdOut.println("Find the point closest to (0.2, 0.6): " +
                                myST.nearest(new Point2D(0.2, 0.6)));
+
+        StdOut.println("Find the points closest to (0.2, 0.6): ");
+        Iterable<Point2D> q = myST.nearest(new Point2D(0.2, 0.6), 2);
+        for (Point2D p : q) {
+            StdOut.println(p);
+        }
+
 
         // Code for runtime testing:
         // String filename = args[0];
